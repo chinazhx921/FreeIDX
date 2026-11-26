@@ -21,6 +21,7 @@ import { InsertCode, useInsertCodes } from '../../components/InsertCode';
 import { cx } from '../../components/ui';
 import { useApplyTheme, useLight, useThemeMode } from '../../store/theme';
 import { ThemeSlot } from '../../lib/theme/slots';
+import { Scenery } from '../../components/Scenery';
 
 /** 导航项（.navbar-nav>.nav-item>.nav-link：px-4 常规 #6c757d，激活主色） */
 function NavItem({
@@ -388,7 +389,9 @@ export function Layout({ children }: { children?: ReactNode }) {
     : { icon: 'grid', label: t('all_forums'), to: topForums[0] ? `/forum/${topForums[0].fid}` : '/', active: false };
 
   return (
-    <div className={cx('theme-zh flex min-h-dvh flex-col bg-background text-foreground', light.bodyFontStyle === 2 && 'font-smiley')}>
+    <div className={cx('theme-zh relative flex min-h-dvh flex-col text-foreground', light.bodyFontStyle === 2 && 'font-smiley')}>
+      {/* Oriental landscape backdrop (fixed, behind content; hidden in dark mode) */}
+      <Scenery />
       {/* ============ #header：固定白色顶栏（blur 10.5px）============
           主题插槽：启用主题覆写 header 时整块（含移动端抽屉）由主题渲染，否则用下方简蓝实现。 */}
       <ThemeSlot name="header">
@@ -651,16 +654,16 @@ export function Layout({ children }: { children?: ReactNode }) {
         </>
       </ThemeSlot>
 
-      {error && <div className="mx-auto w-full max-w-[1280px] px-4 pt-[100px] text-sm text-destructive lg:pt-[83px]">{error}</div>}
+      {error && <div className="relative z-10 mx-auto w-full max-w-[1280px] px-4 pt-[100px] text-sm text-destructive lg:pt-[83px]">{error}</div>}
 
       {/* 内容区：#body（padding-top:75px / 移动 3.93rem+二级行） */}
-      <main id="body" className="mx-auto w-full max-w-[1280px] flex-1 px-4 pb-8 pt-[100px] lg:pt-[83px] max-lg:pb-20">
+      <main id="body" className="relative z-10 mx-auto w-full max-w-[1280px] flex-1 px-4 pb-8 pt-[100px] lg:pt-[83px] max-lg:pb-20">
         {children}
       </main>
 
       {/* ============ footer（主题插槽：覆写时整块替换） ============ */}
       <ThemeSlot name="footer">
-      <footer className="w-full bg-card py-4 text-[13px] text-lt-grey max-lg:pb-20">
+      <footer className="relative z-10 w-full bg-card py-4 text-[13px] text-lt-grey max-lg:pb-20">
         <div className="mx-auto w-full max-w-[1280px] px-4">
           <InsertCode html={insertCodes.footer_start_htm} />
           <div className="flex flex-wrap items-start justify-between gap-4 max-sm:flex-col max-sm:items-center max-sm:text-center">

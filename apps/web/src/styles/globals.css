@@ -179,7 +179,7 @@
   /* 语义令牌（直接覆盖 --color-*，容器级换装） */
   --color-background: #eff2f6;
   --color-foreground: #212529;
-  --color-card: #ffffff;
+  --color-card: rgba(255, 255, 255, 0.86); /* 半透明：透出山水背景（见文末 .scenery） */
   --color-card-foreground: #212529;
   --color-popover: #ffffff;
   --color-popover-foreground: #212529;
@@ -776,4 +776,466 @@ li[id^='pid-']:target {
 .theme-zh .noticelist > .notice .message .handle {
   color: #0084ff;
   font-weight: 600;
+}
+
+/*
+ * ============ 东方绿色山水动态背景（.scenery，纯 CSS/SVG 动画，无外部图片）============
+ * 三层青绿山峦 + 云雾 + 宝塔/松林 + 5 云飘 + 5 鸟飞 + 江面浪涌/荷叶/4 锦鲤。
+ * 由 components/Scenery.tsx 渲染在前台 Layout 根节点内（fixed z-0），内容层 relative z-10。
+ * 暗色模式下隐藏（.dark .scenery），根节点恢复 --color-background 深色画布。
+ */
+html:not(.dark) body {
+  background: #e6f6e9; /* 首屏挂载前与山水天空同色，避免白闪 */
+}
+.dark .theme-zh {
+  background-color: var(--color-background);
+}
+.scenery {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    #f4fbf0 0%,
+    #e6f6e9 22%,
+    #cdeedd 45%,
+    #a9dfc0 62%,
+    #8fd3ab 78%,
+    #6fc48f 100%
+  );
+}
+.dark .scenery {
+  display: none;
+}
+.sc-sun {
+  position: absolute;
+  top: 7%;
+  right: 12%;
+  width: 92px;
+  height: 92px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #fff8dc 0%, #ffe9a8 45%, rgba(255, 220, 130, 0.55) 70%, rgba(255, 220, 130, 0) 100%);
+  box-shadow: 0 0 60px 30px rgba(255, 230, 150, 0.45);
+  animation: sc-sunPulse 6s ease-in-out infinite alternate;
+}
+@keyframes sc-sunPulse {
+  from {
+    transform: scale(1);
+    opacity: 0.92;
+  }
+  to {
+    transform: scale(1.07);
+    opacity: 1;
+  }
+}
+.sc-mountains {
+  position: absolute;
+  left: 0;
+  width: 100%;
+}
+.sc-m-far {
+  bottom: 24vh;
+  height: 34vh;
+  opacity: 0.75;
+}
+.sc-m-mid {
+  bottom: 17vh;
+  height: 32vh;
+  opacity: 0.9;
+}
+.sc-m-near {
+  bottom: 11vh;
+  height: 30vh;
+}
+.sc-pagoda {
+  position: absolute;
+  right: 9%;
+  bottom: 30vh;
+  width: 74px;
+  opacity: 0.85;
+}
+.sc-pines {
+  position: absolute;
+  left: 0;
+  bottom: 12.5vh;
+  width: 100%;
+  height: 9vh;
+  opacity: 0.9;
+}
+.sc-mist {
+  position: absolute;
+  left: -10%;
+  width: 120%;
+  height: 9vh;
+  background: linear-gradient(to right, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.55) 30%, rgba(255, 255, 255, 0.7) 55%, rgba(255, 255, 255, 0));
+  filter: blur(6px);
+  border-radius: 50%;
+}
+.sc-mist-1 {
+  bottom: 34vh;
+  animation: sc-mistDrift 46s ease-in-out infinite alternate;
+}
+.sc-mist-2 {
+  bottom: 23vh;
+  animation: sc-mistDrift 62s ease-in-out infinite alternate-reverse;
+}
+@keyframes sc-mistDrift {
+  from {
+    transform: translateX(-4%);
+  }
+  to {
+    transform: translateX(4%);
+  }
+}
+.sc-cloud {
+  position: absolute;
+  left: 0;
+  background: #ffffff;
+  border-radius: 999px;
+  opacity: 0.85;
+  filter: blur(1px);
+  animation: sc-cloudDrift linear infinite;
+  will-change: transform;
+}
+.sc-cloud::before,
+.sc-cloud::after {
+  content: '';
+  position: absolute;
+  background: #ffffff;
+  border-radius: 50%;
+}
+.sc-cloud::before {
+  width: 55%;
+  height: 170%;
+  left: 16%;
+  top: -85%;
+}
+.sc-cloud::after {
+  width: 38%;
+  height: 120%;
+  right: 12%;
+  top: -55%;
+}
+.sc-c1 {
+  width: 150px;
+  height: 38px;
+  top: 9%;
+  animation-duration: 85s;
+  animation-delay: -20s;
+}
+.sc-c2 {
+  width: 105px;
+  height: 28px;
+  top: 17%;
+  animation-duration: 65s;
+  animation-delay: -45s;
+  opacity: 0.7;
+}
+.sc-c3 {
+  width: 190px;
+  height: 46px;
+  top: 5%;
+  animation-duration: 110s;
+  animation-delay: -70s;
+  opacity: 0.65;
+}
+.sc-c4 {
+  width: 84px;
+  height: 22px;
+  top: 24%;
+  animation-duration: 55s;
+  animation-delay: -10s;
+  opacity: 0.75;
+}
+.sc-c5 {
+  width: 128px;
+  height: 32px;
+  top: 13%;
+  animation-duration: 95s;
+  animation-delay: -55s;
+  opacity: 0.8;
+}
+@keyframes sc-cloudDrift {
+  from {
+    transform: translateX(-25vw);
+  }
+  to {
+    transform: translateX(115vw);
+  }
+}
+.sc-bird {
+  position: absolute;
+  left: 0;
+  width: 46px;
+  animation: sc-birdFly linear infinite;
+  will-change: transform;
+}
+.sc-bird svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  overflow: visible;
+}
+.sc-bird .sc-wing-l,
+.sc-bird .sc-wing-r {
+  fill: #1d4d33;
+  transform-box: fill-box;
+}
+.sc-bird .sc-wing-l {
+  transform-origin: right center;
+  animation: sc-flapL 0.9s ease-in-out infinite alternate;
+}
+.sc-bird .sc-wing-r {
+  transform-origin: left center;
+  animation: sc-flapR 0.9s ease-in-out infinite alternate;
+}
+.sc-bird .sc-body {
+  fill: #1d4d33;
+}
+@keyframes sc-flapL {
+  from {
+    transform: rotate(14deg);
+  }
+  to {
+    transform: rotate(-22deg);
+  }
+}
+@keyframes sc-flapR {
+  from {
+    transform: rotate(-14deg);
+  }
+  to {
+    transform: rotate(22deg);
+  }
+}
+.sc-b1 {
+  top: 12%;
+  animation-duration: 34s;
+  animation-delay: -6s;
+}
+.sc-b2 {
+  top: 16%;
+  width: 36px;
+  animation-duration: 34s;
+  animation-delay: -7.2s;
+}
+.sc-b3 {
+  top: 10%;
+  width: 32px;
+  animation-duration: 34s;
+  animation-delay: -8.1s;
+}
+.sc-b4 {
+  top: 21%;
+  width: 52px;
+  animation-duration: 46s;
+  animation-delay: -26s;
+}
+.sc-b5 {
+  top: 26%;
+  width: 30px;
+  animation-duration: 52s;
+  animation-delay: -40s;
+}
+@keyframes sc-birdFly {
+  0% {
+    transform: translate(-8vw, 0);
+  }
+  25% {
+    transform: translate(22vw, -2.2vh);
+  }
+  50% {
+    transform: translate(52vw, 0.6vh);
+  }
+  75% {
+    transform: translate(82vw, -1.8vh);
+  }
+  100% {
+    transform: translate(112vw, 0);
+  }
+}
+.sc-water {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 17vh;
+  background: linear-gradient(to bottom, #57b98a 0%, #2f9e6e 38%, #1e7d55 72%, #14603f 100%);
+  overflow: hidden;
+}
+.sc-waves {
+  position: absolute;
+  left: 0;
+  width: 200%;
+  height: 26px;
+  will-change: transform;
+}
+.sc-w-back {
+  top: 2px;
+  animation: sc-waveSlide 9s linear infinite;
+}
+.sc-w-front {
+  top: 10px;
+  animation: sc-waveSlide 6s linear infinite reverse;
+}
+@keyframes sc-waveSlide {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+.sc-water::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(100deg, rgba(255, 255, 255, 0.06) 0 26px, rgba(255, 255, 255, 0) 26px 58px);
+  animation: sc-waterShimmer 7s linear infinite;
+}
+@keyframes sc-waterShimmer {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-58px);
+  }
+}
+.sc-leaf {
+  position: absolute;
+  border-radius: 50% 50% 50% 50% / 62% 62% 38% 38%;
+  background: radial-gradient(circle at 50% 38%, #4caf7d 0%, #2e8b5e 70%, #1f6b46 100%);
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.12);
+  animation: sc-leafBob 4.5s ease-in-out infinite alternate;
+}
+.sc-l1 {
+  width: 54px;
+  height: 34px;
+  left: 8%;
+  bottom: 22%;
+}
+.sc-l2 {
+  width: 40px;
+  height: 26px;
+  left: 78%;
+  bottom: 30%;
+  animation-delay: -1.6s;
+}
+.sc-l3 {
+  width: 64px;
+  height: 40px;
+  left: 62%;
+  bottom: 12%;
+  animation-delay: -2.8s;
+}
+@keyframes sc-leafBob {
+  from {
+    transform: translateY(0) rotate(-2deg);
+  }
+  to {
+    transform: translateY(-5px) rotate(2deg);
+  }
+}
+.sc-fish {
+  position: absolute;
+  width: 78px;
+  will-change: transform;
+}
+.sc-fish svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  overflow: visible;
+}
+.sc-fish .sc-tail {
+  transform-box: fill-box;
+  transform-origin: left center;
+  animation: sc-tailWag 0.55s ease-in-out infinite alternate;
+}
+@keyframes sc-tailWag {
+  from {
+    transform: rotate(-9deg);
+  }
+  to {
+    transform: rotate(9deg);
+  }
+}
+.sc-f1 {
+  bottom: 34%;
+  animation: sc-swimR 26s linear infinite;
+}
+.sc-f1 svg {
+  fill: #f08a3c;
+}
+.sc-f2 {
+  bottom: 16%;
+  width: 64px;
+  animation: sc-swimL 32s linear infinite;
+  animation-delay: -12s;
+}
+.sc-f2 svg {
+  fill: #f5f0e6;
+}
+.sc-f3 {
+  bottom: 48%;
+  width: 56px;
+  animation: sc-swimR 38s linear infinite;
+  animation-delay: -20s;
+}
+.sc-f3 svg {
+  fill: #e8b64c;
+}
+.sc-f4 {
+  bottom: 8%;
+  width: 88px;
+  animation: sc-swimL 44s linear infinite;
+  animation-delay: -30s;
+}
+.sc-f4 svg {
+  fill: #d95f4b;
+}
+@keyframes sc-swimR {
+  0% {
+    transform: translate(-12vw, 0);
+  }
+  25% {
+    transform: translate(18vw, -8px);
+  }
+  50% {
+    transform: translate(48vw, 4px);
+  }
+  75% {
+    transform: translate(78vw, -6px);
+  }
+  100% {
+    transform: translate(112vw, 0);
+  }
+}
+@keyframes sc-swimL {
+  0% {
+    transform: translate(112vw, 0) scaleX(-1);
+  }
+  25% {
+    transform: translate(80vw, 6px) scaleX(-1);
+  }
+  50% {
+    transform: translate(50vw, -5px) scaleX(-1);
+  }
+  75% {
+    transform: translate(20vw, 5px) scaleX(-1);
+  }
+  100% {
+    transform: translate(-12vw, 0) scaleX(-1);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .scenery *,
+  .scenery *::before,
+  .scenery *::after {
+    animation: none !important;
+  }
 }
